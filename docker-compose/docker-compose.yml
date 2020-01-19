@@ -1,0 +1,75 @@
+version: '3'
+services:
+  catalog-service:
+    image: "catalog-service-1"
+    environment:
+      - HOST_NAME=catalog-service
+      - rabbitmq.host=rabbitmq
+      - CATALOGDATA_HOST=http://catalog-data:8000
+    ports:
+      - "8100:8100"
+    depends_on:
+      - "rabbitmq"
+    networks:
+      my-network:
+        aliases:
+          - catalog-service
+  rabbitmq:
+    image: "rabbitmq-mng"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      my-network:
+        aliases:
+          - rabbitmq
+  logstash:
+    image: "logstash"
+    ports:
+      - "9600:9600"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - ELASTICSEARCH_HOST=els
+      - ELASTICSEARCH_PORT=9200
+      - LOG_EXCHANGE_NAME=log-exchange
+      - LOG_EXCHANGE_TYPE=direct
+      - LOG_QUEUE=center-log-queue
+    depends_on:
+      - "rabbitmq"
+      - "els"
+    networks:
+      my-network:
+        aliases:
+          - logstash
+  els:
+    image: "elastic-search"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - cluster.name=es-cluster
+      - node.name=es-node-1
+    networks:
+      my-network:
+        aliases:
+          - els
+  kibana:
+    image: "kibana"
+    environment:
+      - KIBANA_SERVER_NAME="kibana"
+      - ELS_HOST=els
+      - ELS_PORT=9200
+      - KIBANA_SERVER_HOST=0.0.0.0
+    ports:
+      - 5601:5601
+    depends_on:
+      - "els"
+    networks:
+      my-network:
+        aliases:
+          - kibana
+networks:
+    my-network:
+        driver: bridge
