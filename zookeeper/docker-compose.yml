@@ -1,19 +1,6 @@
 version: '3'
-services:
-  catalog-service:
-    image: "catalog-service-1"
-    environment:
-      - HOST_NAME=catalog-service
-      - kafka.topic=log-topic
-      - kafka.host=kafka:9200
-      - CATALOGDATA_HOST=http://catalog-data:8000
-    ports:
-      - "8100:8100"
-    networks:
-      my-network:
-        aliases:
-          - catalog-service
 
+services:
   zookeeper:
     image: 'zookeeper'
     ports:
@@ -42,7 +29,21 @@ services:
       my-network:
         aliases:
           - kafka
-
+  kafdrop:
+    image: 'kafdrop'
+    ports:
+      - '9000:9000'
+    environment:
+      - KAFKA_BROKERCONNECT=kafka:9092
+      - JVM_OPTS=-Xms32M -Xmx64M
+      - SERVER_SERVLET_CONTEXTPATH=/
+    depends_on:
+      - zookeeper
+      - kafka
+    networks:
+      my-network:
+        aliases:
+          - kafdrop
 volumes:
   zookeeper_data:
     driver: local

@@ -1,0 +1,8 @@
+docker run --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=localhost:9092 -e JVM_OPTS="-Xms32M -Xmx64M" -e SERVER_SERVLET_CONTEXTPATH="/" kafdrop
+
+https://hub.docker.com/r/obsidiandynamics/kafdrop
+
+Springboot kafka log appender:
+-----------------------------
+https://www.devglan.com/apache-kafka/stream-log4j-logs-to-kafka
+https://examples.javacodegeeks.com/enterprise-java/logback/logback-kafka-appender-example/

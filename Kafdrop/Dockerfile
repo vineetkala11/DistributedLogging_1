@@ -1,0 +1,1 @@
+FROM obsidiandynamics/kafdrop:3.18.1
