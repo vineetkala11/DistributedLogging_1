@@ -4,8 +4,8 @@ services:
     image: "catalog-service-1"
     environment:
       - HOST_NAME=catalog-service
-      - kafka.topic=log-topic
-      - kafka.host=kafka:9200
+      - kafka.topic=center-log-topic
+      - kafka.server=kafka:9200
       - CATALOGDATA_HOST=http://catalog-data:8000
     ports:
       - "8100:8100"
@@ -15,50 +15,6 @@ services:
       my-network:
         aliases:
           - catalog-service
-  logstash:
-    image: "logstash"
-    ports:
-      - "9600:9600"
-    environment:
-      - KAFKA_SERVER=kafka:9200
-      - KAFKA_TOPIC=log-topic
-      - ELASTICSEARCH_HOST=els
-      - ELASTICSEARCH_PORT=9200
-    depends_on:
-      - "kafka"
-      - "els"
-    networks:
-      my-network:
-        aliases:
-          - logstash
-  els:
-    image: "elastic-search"
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      - discovery.type=single-node
-      - cluster.name=es-cluster
-      - node.name=es-node-1
-    networks:
-      my-network:
-        aliases:
-          - els
-  kibana:
-    image: "kibana"
-    environment:
-      - KIBANA_SERVER_NAME="kibana"
-      - ELS_HOST=els
-      - ELS_PORT=9200
-      - KIBANA_SERVER_HOST=0.0.0.0
-    ports:
-      - 5601:5601
-    depends_on:
-      - "els"
-    networks:
-      my-network:
-        aliases:
-          - kibana
   zookeeper:
     image: 'zookeeper'
     ports:
@@ -75,6 +31,7 @@ services:
     image: 'kafka'
     ports:
       - '9092:9092'
+      - '29092:29092'
     volumes:
       - 'kafka_data:/data'
     environment:

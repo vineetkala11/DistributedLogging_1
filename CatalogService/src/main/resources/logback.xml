@@ -22,5 +22,6 @@
    </appender>
    <root level="info">
       <appender-ref ref="asyncMyLogKafka" />
+      <appender-ref ref="STDOUT" />
    </root>
 </configuration>
